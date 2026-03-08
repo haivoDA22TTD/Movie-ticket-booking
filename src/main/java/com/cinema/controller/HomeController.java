@@ -18,4 +18,10 @@ public class HomeController {
         model.addAttribute("comingSoonMovies", movieService.getComingSoonMovies());
         return "index";
     }
+    
+    @GetMapping("/admin/sync-movies")
+    public String syncMovies() {
+        movieService.syncMoviesFromTMDB();
+        return "redirect:/";
+    }
 }
