@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::main})}">
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::section})}">
 <body>
-    <main>
+    <section>
         <div class="container mx-auto px-4 py-12">
             <h1 class="text-3xl font-bold mb-8 text-center">Chọn ghế ngồi</h1>
             
@@ -137,6 +137,6 @@
                 seat.classList.add('seat-available', 'bg-gray-300', 'border-gray-400');
             });
         </script>
-    </main>
+    </section>
 </body>
 </html>

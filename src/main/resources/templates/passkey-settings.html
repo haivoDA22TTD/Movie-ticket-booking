@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::main})}">
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::section})}">
 <body>
-    <main>
+    <section>
         <div class="container mx-auto px-4 py-12 max-w-4xl">
             <h1 class="text-3xl font-bold mb-8">
                 <i class="fas fa-fingerprint text-blue-500 mr-3"></i>Quản lý Passkey
@@ -161,6 +161,6 @@
                 return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
             }
         </script>
-    </main>
+    </section>
 </body>
 </html>

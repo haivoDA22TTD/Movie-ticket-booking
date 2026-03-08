@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::main})}">
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::section})}">
 <body>
-    <main>
+    <section>
         <div class="min-h-screen flex items-center justify-center py-12 px-4">
             <div class="max-w-md w-full">
                 <div class="text-center mb-8">
@@ -139,6 +139,6 @@
                 return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
             }
         </script>
-    </main>
+    </section>
 </body>
 </html>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::main})}">
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::section})}">
 <body>
-    <main>
+    <section>
         <!-- Movie Header -->
         <div class="relative h-96 bg-cover bg-center" 
              th:style="'background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url(https://image.tmdb.org/t/p/original' + ${movie.backdropPath} + ');'">
@@ -80,6 +80,6 @@
                 </div>
             </div>
         </div>
-    </main>
+    </section>
 </body>
 </html>
