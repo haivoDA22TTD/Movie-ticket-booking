@@ -21,12 +21,16 @@ public class MovieService {
     
     @Cacheable(value = "movies", key = "'nowShowing'")
     public List<Movie> getNowShowingMovies() {
-        return movieRepository.findByStatus(Movie.MovieStatus.NOW_SHOWING);
+        List<Movie> movies = movieRepository.findByStatus(Movie.MovieStatus.NOW_SHOWING);
+        log.info("Found {} now showing movies in database", movies.size());
+        return movies;
     }
     
     @Cacheable(value = "movies", key = "'comingSoon'")
     public List<Movie> getComingSoonMovies() {
-        return movieRepository.findByStatus(Movie.MovieStatus.COMING_SOON);
+        List<Movie> movies = movieRepository.findByStatus(Movie.MovieStatus.COMING_SOON);
+        log.info("Found {} coming soon movies in database", movies.size());
+        return movies;
     }
     
     public Movie getMovieById(Long id) {
@@ -36,11 +40,17 @@ public class MovieService {
     
     @Transactional
     public void syncMoviesFromTMDB() {
+        log.info("Starting TMDB sync...");
         List<TMDBMovieResponse> nowPlaying = tmdbService.getNowPlayingMovies();
         List<TMDBMovieResponse> upcoming = tmdbService.getUpcomingMovies();
         
+        log.info("Received {} now playing and {} upcoming movies from TMDB", 
+            nowPlaying.size(), upcoming.size());
+        
         nowPlaying.forEach(tmdbMovie -> saveOrUpdateMovie(tmdbMovie, Movie.MovieStatus.NOW_SHOWING));
         upcoming.forEach(tmdbMovie -> saveOrUpdateMovie(tmdbMovie, Movie.MovieStatus.COMING_SOON));
+        
+        log.info("TMDB sync completed!");
     }
     
     private void saveOrUpdateMovie(TMDBMovieResponse tmdbMovie, Movie.MovieStatus status) {
