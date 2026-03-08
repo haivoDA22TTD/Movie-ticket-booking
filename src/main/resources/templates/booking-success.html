@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::main})}">
+<body>
+    <main>
+        <div class="container mx-auto px-4 py-12 max-w-2xl">
+            <!-- Success Message -->
+            <div class="text-center mb-8">
+                <div class="inline-block bg-green-100 rounded-full p-6 mb-4">
+                    <i class="fas fa-check-circle text-green-600 text-6xl"></i>
+                </div>
+                <h1 class="text-3xl font-bold text-green-600 mb-2">Đặt vé thành công!</h1>
+                <p class="text-gray-600">Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi</p>
+            </div>
+            
+            <!-- QR Code -->
+            <div class="bg-white rounded-lg shadow-lg p-8 mb-6 text-center">
+                <h2 class="text-xl font-bold mb-4">Mã QR vé của bạn</h2>
+                <img th:src="${booking.qrCode}" alt="QR Code" class="mx-auto mb-4">
+                <p class="text-gray-600 text-sm">Vui lòng xuất trình mã QR này tại quầy để nhận vé</p>
+            </div>
+            
+            <!-- Booking Details -->
+            <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                <h2 class="text-xl font-bold mb-4 border-b pb-2">Chi tiết đặt vé</h2>
+                
+                <div class="space-y-3">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Mã đặt vé:</span>
+                        <span class="font-bold text-red-600" th:text="${booking.bookingCode}">BK12345678</span>
+                    </div>
+                    
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Phim:</span>
+                        <span class="font-bold" th:text="${booking.showtime.movie.title}">Movie</span>
+                    </div>
+                    
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Rạp:</span>
+                        <span th:text="${booking.showtime.screen.cinema.name}">Cinema</span>
+                    </div>
+                    
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Phòng:</span>
+                        <span th:text="${booking.showtime.screen.name}">Screen</span>
+                    </div>
+                    
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Suất chiếu:</span>
+                        <span th:text="${#temporals.format(booking.showtime.startTime, 'HH:mm dd/MM/yyyy')}">Time</span>
+                    </div>
+                    
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Ghế:</span>
+                        <span class="font-bold">
+                            <span th:each="seat, iterStat : ${booking.seats}">
+                                <span th:text="${seat.seatRow + seat.seatNumber}">A1</span>
+                                <span th:if="${!iterStat.last}">, </span>
+                            </span>
+                        </span>
+                    </div>
+                    
+                    <div class="flex justify-between text-xl font-bold text-red-600 pt-3 border-t">
+                        <span>Tổng tiền:</span>
+                        <span th:text="${#numbers.formatDecimal(booking.totalPrice, 0, 'COMMA', 0, 'POINT')} + 'đ'">200000đ</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Actions -->
+            <div class="grid grid-cols-2 gap-4">
+                <a href="/" class="text-center bg-gray-200 text-gray-800 py-3 rounded-lg font-bold hover:bg-gray-300 transition">
+                    <i class="fas fa-home mr-2"></i>Về trang chủ
+                </a>
+                <a href="/booking/my-bookings" class="text-center bg-red-600 text-white py-3 rounded-lg font-bold hover:bg-red-700 transition">
+                    <i class="fas fa-ticket-alt mr-2"></i>Vé của tôi
+                </a>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

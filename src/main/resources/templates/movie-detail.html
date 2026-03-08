@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::main})}">
+<body>
+    <main>
+        <!-- Movie Header -->
+        <div class="relative h-96 bg-cover bg-center" 
+             th:style="'background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url(https://image.tmdb.org/t/p/original' + ${movie.backdropPath} + ');'">
+            <div class="container mx-auto px-4 h-full flex items-center">
+                <div class="flex items-start space-x-8">
+                    <img th:src="'https://image.tmdb.org/t/p/w500' + ${movie.posterPath}" 
+                         th:alt="${movie.title}"
+                         class="w-64 rounded-lg shadow-2xl">
+                    <div class="text-white flex-1">
+                        <h1 class="text-5xl font-bold mb-4" th:text="${movie.title}">Movie Title</h1>
+                        <div class="flex items-center space-x-6 mb-4">
+                            <span class="text-yellow-400 text-xl">
+                                <i class="fas fa-star"></i>
+                                <span th:text="${#numbers.formatDecimal(movie.voteAverage, 1, 1)}">8.5</span>/10
+                            </span>
+                            <span th:if="${movie.runtime}">
+                                <i class="fas fa-clock mr-1"></i>
+                                <span th:text="${movie.runtime}">120</span> phút
+                            </span>
+                            <span>
+                                <i class="fas fa-calendar mr-1"></i>
+                                <span th:text="${movie.releaseDate}">2024</span>
+                            </span>
+                        </div>
+                        <div class="mb-4">
+                            <span th:each="genre : ${movie.genres}" 
+                                  class="inline-block bg-red-600 rounded-full px-4 py-2 text-sm mr-2"
+                                  th:text="${genre}">Action</span>
+                        </div>
+                        <p class="text-lg leading-relaxed" th:text="${movie.overview}">Movie overview</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Showtimes -->
+        <div class="container mx-auto px-4 py-12">
+            <h2 class="text-3xl font-bold mb-8">
+                <i class="fas fa-clock text-red-500 mr-3"></i>Lịch chiếu
+            </h2>
+            
+            <div th:if="${#lists.isEmpty(showtimes)}" class="text-center py-12">
+                <i class="fas fa-calendar-times text-gray-400 text-6xl mb-4"></i>
+                <p class="text-gray-600 text-xl">Chưa có lịch chiếu</p>
+            </div>
+            
+            <div th:unless="${#lists.isEmpty(showtimes)}" class="space-y-6">
+                <div th:each="showtime : ${showtimes}" 
+                     class="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h3 class="text-xl font-bold mb-2">
+                                <i class="fas fa-map-marker-alt text-red-500 mr-2"></i>
+                                <span th:text="${showtime.screen.cinema.name}">Cinema Name</span>
+                            </h3>
+                            <p class="text-gray-600 mb-2" th:text="${showtime.screen.cinema.address}">Address</p>
+                            <p class="text-gray-600">
+                                <i class="fas fa-door-open mr-2"></i>
+                                Phòng: <span th:text="${showtime.screen.name}">Screen 1</span>
+                            </p>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-3xl font-bold text-red-600 mb-2" 
+                                 th:text="${#temporals.format(showtime.startTime, 'HH:mm')}">19:30</div>
+                            <div class="text-gray-600 mb-4" 
+                                 th:text="${#temporals.format(showtime.startTime, 'dd/MM/yyyy')}">25/12/2024</div>
+                            <div class="text-2xl font-bold text-green-600 mb-4">
+                                <span th:text="${#numbers.formatDecimal(showtime.price, 0, 'COMMA', 0, 'POINT')}">100000</span>đ
+                            </div>
+                            <a th:href="@{/booking/showtime/{id}(id=${showtime.id})}" 
+                               class="inline-block bg-red-600 text-white px-8 py-3 rounded-lg hover:bg-red-700 transition">
+                                <i class="fas fa-ticket-alt mr-2"></i>Đặt vé
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: cinema-booking
+    env: java
+    buildCommand: mvn clean package -DskipTests
+    startCommand: java -jar target/movie-booking-1.0.0.jar
+    envVars:
+      - key: JAVA_TOOL_OPTIONS
+        value: -Xmx512m -Xms256m
+      - key: MYSQL_PUBLIC_URL
+        sync: false
+      - key: REDIS_PUBLIC_URL
+        sync: false
+      - key: TMDB_API_KEY
+        sync: false
+      - key: SERVER_PORT
+        value: 8080
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: JPA_DDL_AUTO
+        value: update
+      - key: JPA_SHOW_SQL
+        value: false

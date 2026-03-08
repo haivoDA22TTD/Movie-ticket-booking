@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::main})}">
+<body>
+    <main>
+        <div class="container mx-auto px-4 py-12">
+            <h1 class="text-3xl font-bold mb-8">
+                <i class="fas fa-ticket-alt text-red-500 mr-3"></i>Vé của tôi
+            </h1>
+            
+            <div th:if="${#lists.isEmpty(bookings)}" class="text-center py-12">
+                <i class="fas fa-inbox text-gray-400 text-6xl mb-4"></i>
+                <p class="text-gray-600 text-xl mb-4">Bạn chưa có vé nào</p>
+                <a href="/" class="inline-block bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition">
+                    Đặt vé ngay
+                </a>
+            </div>
+            
+            <div th:unless="${#lists.isEmpty(bookings)}" class="space-y-6">
+                <div th:each="booking : ${bookings}" 
+                     class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition">
+                    <div class="flex">
+                        <img th:src="'https://image.tmdb.org/t/p/w200' + ${booking.showtime.movie.posterPath}" 
+                             th:alt="${booking.showtime.movie.title}"
+                             class="w-32 object-cover">
+                        <div class="flex-1 p-6">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <h3 class="text-2xl font-bold mb-2" th:text="${booking.showtime.movie.title}">Movie</h3>
+                                    <p class="text-gray-600">
+                                        <i class="fas fa-map-marker-alt mr-2"></i>
+                                        <span th:text="${booking.showtime.screen.cinema.name}">Cinema</span>
+                                    </p>
+                                </div>
+                                <span th:classappend="${booking.status.name() == 'CONFIRMED'} ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'"
+                                      class="px-4 py-2 rounded-full font-bold">
+                                    <span th:text="${booking.status.name() == 'CONFIRMED'} ? 'Đã xác nhận' : 'Chờ thanh toán'">Status</span>
+                                </span>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <p class="text-gray-600 text-sm">Mã đặt vé</p>
+                                    <p class="font-bold" th:text="${booking.bookingCode}">BK12345678</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-600 text-sm">Suất chiếu</p>
+                                    <p class="font-bold" th:text="${#temporals.format(booking.showtime.startTime, 'HH:mm dd/MM/yyyy')}">Time</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-600 text-sm">Ghế</p>
+                                    <p class="font-bold">
+                                        <span th:each="seat, iterStat : ${booking.seats}">
+                                            <span th:text="${seat.seatRow + seat.seatNumber}">A1</span>
+                                            <span th:if="${!iterStat.last}">, </span>
+                                        </span>
+                                    </p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-600 text-sm">Tổng tiền</p>
+                                    <p class="font-bold text-red-600" th:text="${#numbers.formatDecimal(booking.totalPrice, 0, 'COMMA', 0, 'POINT')} + 'đ'">200000đ</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

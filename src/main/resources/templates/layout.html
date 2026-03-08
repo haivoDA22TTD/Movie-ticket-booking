@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title} ?: 'Cinema Booking'">Cinema Booking</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-gray-900 text-white shadow-lg">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <a href="/" class="text-2xl font-bold text-red-500">
+                    <i class="fas fa-film mr-2"></i>CINEMA
+                </a>
+                
+                <div class="hidden md:flex space-x-6">
+                    <a href="/" class="hover:text-red-500 transition">Trang chủ</a>
+                    <a href="/#now-showing" class="hover:text-red-500 transition">Phim đang chiếu</a>
+                    <a href="/#coming-soon" class="hover:text-red-500 transition">Phim sắp chiếu</a>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <div sec:authorize="isAuthenticated()">
+                        <a href="/booking/my-bookings" class="hover:text-red-500 transition">
+                            <i class="fas fa-ticket-alt mr-1"></i>Vé của tôi
+                        </a>
+                        <span class="mx-2">|</span>
+                        <a href="/passkey/settings" class="hover:text-red-500 transition">
+                            <i class="fas fa-fingerprint mr-1"></i>Passkey
+                        </a>
+                        <span class="mx-2">|</span>
+                        <span sec:authentication="principal.fullName"></span>
+                        <form th:action="@{/logout}" method="post" class="inline">
+                            <button type="submit" class="ml-2 hover:text-red-500 transition">
+                                <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                            </button>
+                        </form>
+                    </div>
+                    <div sec:authorize="!isAuthenticated()">
+                        <a href="/login" class="hover:text-red-500 transition">
+                            <i class="fas fa-sign-in-alt mr-1"></i>Đăng nhập
+                        </a>
+                        <span class="mx-2">|</span>
+                        <a href="/register" class="bg-red-600 px-4 py-2 rounded hover:bg-red-700 transition">
+                            Đăng ký
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <main th:replace="${content}">
+        Content goes here
+    </main>
+    
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white mt-16">
+        <div class="container mx-auto px-4 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4 text-red-500">CINEMA</h3>
+                    <p class="text-gray-400">Hệ thống rạp chiếu phim hiện đại</p>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-4">Liên hệ</h4>
+                    <p class="text-gray-400">Email: support@cinema.vn</p>
+                    <p class="text-gray-400">Hotline: 1900 xxxx</p>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-4">Theo dõi chúng tôi</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-red-500"><i class="fab fa-facebook fa-2x"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-red-500"><i class="fab fa-instagram fa-2x"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-red-500"><i class="fab fa-youtube fa-2x"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2024 Cinema. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

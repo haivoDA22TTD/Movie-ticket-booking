@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::main})}">
+<body>
+    <main>
+        <!-- Hero Section -->
+        <div class="gradient-bg text-white py-20">
+            <div class="container mx-auto px-4 text-center">
+                <h1 class="text-5xl font-bold mb-4">Trải nghiệm điện ảnh đỉnh cao</h1>
+                <p class="text-xl mb-8">Đặt vé nhanh chóng, tiện lợi</p>
+            </div>
+        </div>
+        
+        <!-- Now Showing -->
+        <section id="now-showing" class="container mx-auto px-4 py-12">
+            <h2 class="text-3xl font-bold mb-8 flex items-center">
+                <i class="fas fa-fire text-red-500 mr-3"></i>
+                Phim đang chiếu
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div th:each="movie : ${nowShowingMovies}" class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-2xl transition transform hover:-translate-y-2">
+                    <a th:href="@{/movies/{id}(id=${movie.id})}">
+                        <img th:src="'https://image.tmdb.org/t/p/w500' + ${movie.posterPath}" 
+                             th:alt="${movie.title}"
+                             class="w-full h-96 object-cover">
+                        <div class="p-4">
+                            <h3 class="font-bold text-lg mb-2" th:text="${movie.title}">Movie Title</h3>
+                            <div class="flex items-center justify-between">
+                                <span class="text-yellow-500">
+                                    <i class="fas fa-star"></i>
+                                    <span th:text="${#numbers.formatDecimal(movie.voteAverage, 1, 1)}">8.5</span>
+                                </span>
+                                <span class="text-gray-600 text-sm" th:text="${movie.releaseDate}">2024</span>
+                            </div>
+                            <div class="mt-3">
+                                <span th:each="genre : ${movie.genres}" 
+                                      class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm text-gray-700 mr-2 mb-2"
+                                      th:text="${genre}">Action</span>
+                            </div>
+                            <button class="w-full mt-4 bg-red-600 text-white py-2 rounded hover:bg-red-700 transition">
+                                <i class="fas fa-ticket-alt mr-2"></i>Đặt vé ngay
+                            </button>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Coming Soon -->
+        <section id="coming-soon" class="bg-gray-100 py-12">
+            <div class="container mx-auto px-4">
+                <h2 class="text-3xl font-bold mb-8 flex items-center">
+                    <i class="fas fa-clock text-blue-500 mr-3"></i>
+                    Phim sắp chiếu
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    <div th:each="movie : ${comingSoonMovies}" class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-2xl transition transform hover:-translate-y-2">
+                        <a th:href="@{/movies/{id}(id=${movie.id})}">
+                            <div class="relative">
+                                <img th:src="'https://image.tmdb.org/t/p/w500' + ${movie.posterPath}" 
+                                     th:alt="${movie.title}"
+                                     class="w-full h-96 object-cover">
+                                <div class="absolute top-0 right-0 bg-blue-600 text-white px-3 py-1 m-2 rounded">
+                                    Sắp chiếu
+                                </div>
+                            </div>
+                            <div class="p-4">
+                                <h3 class="font-bold text-lg mb-2" th:text="${movie.title}">Movie Title</h3>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-gray-600 text-sm">
+                                        <i class="fas fa-calendar mr-1"></i>
+                                        <span th:text="${movie.releaseDate}">2024-12-25</span>
+                                    </span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

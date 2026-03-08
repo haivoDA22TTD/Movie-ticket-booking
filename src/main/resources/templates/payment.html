@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::main})}">
+<body>
+    <main>
+        <div class="container mx-auto px-4 py-12 max-w-2xl">
+            <h1 class="text-3xl font-bold mb-8 text-center">Thanh toán</h1>
+            
+            <!-- Booking Details -->
+            <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                <h2 class="text-xl font-bold mb-4 border-b pb-2">Thông tin đặt vé</h2>
+                
+                <div class="space-y-3">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Mã đặt vé:</span>
+                        <span class="font-bold" th:text="${booking.bookingCode}">BK12345678</span>
+                    </div>
+                    
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Phim:</span>
+                        <span class="font-bold" th:text="${booking.showtime.movie.title}">Movie</span>
+                    </div>
+                    
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Rạp:</span>
+                        <span th:text="${booking.showtime.screen.cinema.name}">Cinema</span>
+                    </div>
+                    
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Phòng:</span>
+                        <span th:text="${booking.showtime.screen.name}">Screen</span>
+                    </div>
+                    
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Suất chiếu:</span>
+                        <span th:text="${#temporals.format(booking.showtime.startTime, 'HH:mm dd/MM/yyyy')}">Time</span>
+                    </div>
+                    
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Ghế:</span>
+                        <span class="font-bold">
+                            <span th:each="seat, iterStat : ${booking.seats}">
+                                <span th:text="${seat.seatRow + seat.seatNumber}">A1</span>
+                                <span th:if="${!iterStat.last}">, </span>
+                            </span>
+                        </span>
+                    </div>
+                    
+                    <div class="flex justify-between text-xl font-bold text-red-600 pt-3 border-t">
+                        <span>Tổng tiền:</span>
+                        <span th:text="${#numbers.formatDecimal(booking.totalPrice, 0, 'COMMA', 0, 'POINT')} + 'đ'">200000đ</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Payment Methods -->
+            <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                <h2 class="text-xl font-bold mb-4 border-b pb-2">Phương thức thanh toán</h2>
+                
+                <div class="space-y-3">
+                    <label class="flex items-center p-4 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-red-500 transition">
+                        <input type="radio" name="payment" value="momo" class="mr-3" checked>
+                        <i class="fab fa-cc-visa text-3xl mr-3 text-blue-600"></i>
+                        <span class="font-bold">Ví MoMo</span>
+                    </label>
+                    
+                    <label class="flex items-center p-4 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-red-500 transition">
+                        <input type="radio" name="payment" value="vnpay" class="mr-3">
+                        <i class="fas fa-credit-card text-3xl mr-3 text-red-600"></i>
+                        <span class="font-bold">VNPay</span>
+                    </label>
+                    
+                    <label class="flex items-center p-4 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-red-500 transition">
+                        <input type="radio" name="payment" value="zalopay" class="mr-3">
+                        <i class="fas fa-wallet text-3xl mr-3 text-blue-500"></i>
+                        <span class="font-bold">ZaloPay</span>
+                    </label>
+                </div>
+                
+                <div class="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <p class="text-sm text-yellow-800">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        Đây là thanh toán giả lập. Không có giao dịch thực tế nào được thực hiện.
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Confirm Button -->
+            <form th:action="@{/booking/confirm/{id}(id=${booking.id})}" method="post">
+                <button type="submit" 
+                        class="w-full bg-red-600 text-white py-4 rounded-lg text-xl font-bold hover:bg-red-700 transition">
+                    <i class="fas fa-check-circle mr-2"></i>Xác nhận thanh toán
+                </button>
+            </form>
+        </div>
+    </main>
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::main})}">
+<body>
+    <main>
+        <div class="container mx-auto px-4 py-12 max-w-4xl">
+            <h1 class="text-3xl font-bold mb-8">
+                <i class="fas fa-fingerprint text-blue-500 mr-3"></i>Quản lý Passkey
+            </h1>
+            
+            <!-- Info Box -->
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
+                <h3 class="font-bold text-lg mb-2">
+                    <i class="fas fa-info-circle text-blue-600 mr-2"></i>Passkey là gì?
+                </h3>
+                <p class="text-gray-700 mb-2">
+                    Passkey cho phép bạn đăng nhập nhanh chóng và an toàn bằng vân tay, Face ID, 
+                    hoặc mã PIN thiết bị mà không cần nhập mật khẩu.
+                </p>
+                <ul class="list-disc list-inside text-gray-700 space-y-1">
+                    <li>An toàn hơn mật khẩu truyền thống</li>
+                    <li>Không thể bị đánh cắp hoặc phishing</li>
+                    <li>Đăng nhập nhanh chóng chỉ với một chạm</li>
+                </ul>
+            </div>
+            
+            <!-- Add Passkey Button -->
+            <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+                <h2 class="text-xl font-bold mb-4">Thêm Passkey mới</h2>
+                <button onclick="registerPasskey()" 
+                        class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition">
+                    <i class="fas fa-plus mr-2"></i>Thêm Passkey
+                </button>
+            </div>
+            
+            <!-- Passkey List -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-xl font-bold mb-4">Passkey đã đăng ký</h2>
+                
+                <div th:if="${#lists.isEmpty(passkeys)}" class="text-center py-8 text-gray-500">
+                    <i class="fas fa-key text-6xl mb-4 text-gray-300"></i>
+                    <p>Bạn chưa đăng ký passkey nào</p>
+                </div>
+                
+                <div th:unless="${#lists.isEmpty(passkeys)}" class="space-y-4">
+                    <div th:each="passkey : ${passkeys}" 
+                         class="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
+                        <div class="flex items-center space-x-4">
+                            <div class="bg-blue-100 p-3 rounded-full">
+                                <i class="fas fa-fingerprint text-blue-600 text-2xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold" th:text="${passkey.deviceName}">Device Name</h3>
+                                <p class="text-sm text-gray-600">
+                                    Đăng ký: <span th:text="${#temporals.format(passkey.createdAt, 'dd/MM/yyyy HH:mm')}">Date</span>
+                                </p>
+                                <p class="text-sm text-gray-600" th:if="${passkey.lastUsedAt}">
+                                    Sử dụng lần cuối: <span th:text="${#temporals.format(passkey.lastUsedAt, 'dd/MM/yyyy HH:mm')}">Date</span>
+                                </p>
+                            </div>
+                        </div>
+                        <button th:onclick="'deletePasskey(' + ${passkey.id} + ')'" 
+                                class="text-red-600 hover:text-red-800 px-4 py-2 rounded hover:bg-red-50 transition">
+                            <i class="fas fa-trash mr-2"></i>Xóa
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <script>
+            async function registerPasskey() {
+                try {
+                    // Check if WebAuthn is supported
+                    if (!window.PublicKeyCredential) {
+                        alert('Trình duyệt của bạn không hỗ trợ Passkey');
+                        return;
+                    }
+                    
+                    const deviceName = prompt('Đặt tên cho thiết bị này:', 'Thiết bị của tôi');
+                    if (!deviceName) return;
+                    
+                    // Start registration
+                    const startResponse = await fetch('/passkey/register/start?deviceName=' + encodeURIComponent(deviceName), {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    
+                    const options = await startResponse.json();
+                    
+                    // Convert challenge and user.id to Uint8Array
+                    options.challenge = base64ToArrayBuffer(options.challenge);
+                    options.user.id = base64ToArrayBuffer(options.user.id);
+                    
+                    // Create credential
+                    const credential = await navigator.credentials.create({
+                        publicKey: options
+                    });
+                    
+                    // Finish registration
+                    const finishResponse = await fetch('/passkey/register/finish', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            credentialId: arrayBufferToBase64(credential.rawId),
+                            publicKey: arrayBufferToBase64(credential.response.getPublicKey()),
+                            deviceName: deviceName,
+                            challenge: options.challenge
+                        })
+                    });
+                    
+                    const result = await finishResponse.json();
+                    
+                    if (result.status === 'success') {
+                        alert(result.message);
+                        location.reload();
+                    } else {
+                        alert('Lỗi: ' + result.message);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Có lỗi xảy ra: ' + error.message);
+                }
+            }
+            
+            async function deletePasskey(passkeyId) {
+                if (!confirm('Bạn có chắc muốn xóa passkey này?')) return;
+                
+                try {
+                    const response = await fetch('/passkey/' + passkeyId, {
+                        method: 'DELETE'
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.status === 'success') {
+                        alert(result.message);
+                        location.reload();
+                    } else {
+                        alert('Lỗi: ' + result.message);
+                    }
+                } catch (error) {
+                    alert('Có lỗi xảy ra: ' + error.message);
+                }
+            }
+            
+            function base64ToArrayBuffer(base64) {
+                const binaryString = atob(base64.replace(/-/g, '+').replace(/_/g, '/'));
+                const bytes = new Uint8Array(binaryString.length);
+                for (let i = 0; i < binaryString.length; i++) {
+                    bytes[i] = binaryString.charCodeAt(i);
+                }
+                return bytes.buffer;
+            }
+            
+            function arrayBufferToBase64(buffer) {
+                const bytes = new Uint8Array(buffer);
+                let binary = '';
+                for (let i = 0; i < bytes.byteLength; i++) {
+                    binary += String.fromCharCode(bytes[i]);
+                }
+                return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+            }
+        </script>
+    </main>
+</body>
+</html>
