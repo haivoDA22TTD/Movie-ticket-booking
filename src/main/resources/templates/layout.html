@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" 
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:fragment="layout (content)">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -59,9 +60,9 @@
     </nav>
     
     <!-- Main Content -->
-    <main th:replace="${content}">
+    <div th:replace="${content}">
         Content goes here
-    </main>
+    </div>
     
     <!-- Footer -->
     <footer class="bg-gray-900 text-white mt-16">
