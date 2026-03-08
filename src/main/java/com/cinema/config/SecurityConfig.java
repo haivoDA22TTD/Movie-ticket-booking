@@ -22,7 +22,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/", "/movies/**", "/css/**", "/js/**", "/images/**", 
                     "/register", "/login", "/api/movies/**", 
-                    "/passkey/authenticate/**", "/actuator/health").permitAll()
+                    "/passkey/authenticate/**", "/actuator/health", "/admin/sync-movies").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
