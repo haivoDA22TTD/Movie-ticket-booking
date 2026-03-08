@@ -25,11 +25,4 @@ public class HomeController {
         movieService.syncMoviesFromTMDB();
         return "redirect:/";
     }
-    
-    @GetMapping("/admin/clear-cache")
-    @ResponseBody
-    public String clearCache() {
-        movieService.clearCache();
-        return "Cache cleared! <a href='/'>Go to home</a>";
-    }
 }
