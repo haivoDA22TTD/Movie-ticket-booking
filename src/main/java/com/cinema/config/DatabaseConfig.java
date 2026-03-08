@@ -1,5 +1,6 @@
 package com.cinema.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
@@ -10,6 +11,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 @Configuration
+@Slf4j
 public class DatabaseConfig {
     
     @Value("${MYSQL_PUBLIC_URL:}")
@@ -34,6 +36,8 @@ public class DatabaseConfig {
     public DataSource dataSource() {
         DataSourceBuilder<?> dataSourceBuilder = DataSourceBuilder.create();
         
+        log.info("MYSQL_PUBLIC_URL: {}", mysqlPublicUrl);
+        
         // Nếu có MYSQL_PUBLIC_URL thì parse từ URL
         if (mysqlPublicUrl != null && !mysqlPublicUrl.isEmpty()) {
             try {
@@ -47,14 +51,18 @@ public class DatabaseConfig {
                 String password = userInfo.length > 1 ? userInfo[1] : "";
                 
                 String jdbcUrl = String.format(
-                    "jdbc:mysql://%s:%d/%s?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true",
+                    "jdbc:mysql://%s:%d/%s?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&autoReconnect=true&useUnicode=true&characterEncoding=UTF-8",
                     host, port, database
                 );
+                
+                log.info("Using MYSQL_PUBLIC_URL - JDBC URL: {}", jdbcUrl);
+                log.info("Username: {}", username);
                 
                 dataSourceBuilder.url(jdbcUrl);
                 dataSourceBuilder.username(username);
                 dataSourceBuilder.password(password);
             } catch (URISyntaxException e) {
+                log.error("Invalid MYSQL_PUBLIC_URL format: {}", mysqlPublicUrl, e);
                 throw new RuntimeException("Invalid MYSQL_PUBLIC_URL format", e);
             }
         } else {
@@ -63,6 +71,9 @@ public class DatabaseConfig {
                 "jdbc:mysql://%s:%s/%s?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true",
                 dbHost, dbPort, dbName
             );
+            
+            log.info("Using individual DB vars - JDBC URL: {}", jdbcUrl);
+            log.info("Username: {}", dbUsername);
             
             dataSourceBuilder.url(jdbcUrl);
             dataSourceBuilder.username(dbUsername);
