@@ -5,7 +5,6 @@ import com.cinema.entity.Movie;
 import com.cinema.repository.MovieRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,18 +20,13 @@ public class MovieService {
     private final MovieRepository movieRepository;
     private final TMDBService tmdbService;
     
-    @Cacheable(value = "movies", key = "'nowShowing'")
-    public List<Movie> getNowShowingMovies() {
-        List<Movie> movies = movieRepository.findByStatus(Movie.MovieStatus.NOW_SHOWING);
-        log.info("Found {} now showing movies in database", movies.size());
-        return movies;
+    // Lấy phim trực tiếp từ TMDB, không cache
+    public List<TMDBMovieResponse> getNowShowingMovies() {
+        return tmdbService.getNowPlayingMovies();
     }
     
-    @Cacheable(value = "movies", key = "'comingSoon'")
-    public List<Movie> getComingSoonMovies() {
-        List<Movie> movies = movieRepository.findByStatus(Movie.MovieStatus.COMING_SOON);
-        log.info("Found {} coming soon movies in database", movies.size());
-        return movies;
+    public List<TMDBMovieResponse> getComingSoonMovies() {
+        return tmdbService.getUpcomingMovies();
     }
     
     public Movie getMovieById(Long id) {
@@ -42,17 +36,11 @@ public class MovieService {
     
     @Transactional
     public void syncMoviesFromTMDB() {
-        log.info("Starting TMDB sync...");
         List<TMDBMovieResponse> nowPlaying = tmdbService.getNowPlayingMovies();
         List<TMDBMovieResponse> upcoming = tmdbService.getUpcomingMovies();
         
-        log.info("Received {} now playing and {} upcoming movies from TMDB", 
-            nowPlaying.size(), upcoming.size());
-        
         nowPlaying.forEach(tmdbMovie -> saveOrUpdateMovie(tmdbMovie, Movie.MovieStatus.NOW_SHOWING));
         upcoming.forEach(tmdbMovie -> saveOrUpdateMovie(tmdbMovie, Movie.MovieStatus.COMING_SOON));
-        
-        log.info("TMDB sync completed!");
     }
     
     private void saveOrUpdateMovie(TMDBMovieResponse tmdbMovie, Movie.MovieStatus status) {

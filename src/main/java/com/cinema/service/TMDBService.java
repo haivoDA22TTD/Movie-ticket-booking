@@ -23,13 +23,8 @@ public class TMDBService {
     
     private final WebClient webClient = WebClient.builder().build();
     
-    @Cacheable(value = "nowPlayingMovies", unless = "#result == null")
     public List<TMDBMovieResponse> getNowPlayingMovies() {
         try {
-            log.info("Fetching now playing movies from TMDB...");
-            log.info("Base URL: {}", baseUrl);
-            log.info("API Key length: {}", apiKey != null ? apiKey.length() : 0);
-            
             var response = webClient.get()
                 .uri(baseUrl + "/movie/now_playing?language=vi-VN")
                 .header("Authorization", "Bearer " + apiKey)
@@ -37,7 +32,6 @@ public class TMDBService {
                 .bodyToMono(TMDBApiResponse.class)
                 .block();
             
-            log.info("Fetched {} now playing movies", response != null ? response.getResults().size() : 0);
             return response != null ? response.getResults() : List.of();
         } catch (Exception e) {
             log.error("Error fetching now playing movies", e);
@@ -45,7 +39,6 @@ public class TMDBService {
         }
     }
     
-    @Cacheable(value = "upcomingMovies", unless = "#result == null")
     public List<TMDBMovieResponse> getUpcomingMovies() {
         try {
             var response = webClient.get()
@@ -62,7 +55,6 @@ public class TMDBService {
         }
     }
     
-    @Cacheable(value = "movieDetails", key = "#movieId")
     public TMDBMovieResponse getMovieDetails(Long movieId) {
         try {
             return webClient.get()
