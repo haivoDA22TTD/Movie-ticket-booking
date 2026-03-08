@@ -4,6 +4,7 @@ import com.cinema.dto.TMDBMovieResponse;
 import com.cinema.entity.Movie;
 import com.cinema.repository.MovieRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MovieService {
     
     private final MovieRepository movieRepository;
