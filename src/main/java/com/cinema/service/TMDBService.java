@@ -15,10 +15,10 @@ import java.util.List;
 @Slf4j
 public class TMDBService {
     
-    @Value("${tmdb.api.key}")
+    @Value("${TMDB_API_KEY}")
     private String apiKey;
     
-    @Value("${tmdb.api.base-url:https://api.themoviedb.org/3}")
+    @Value("${TMDB_BASE_URL:https://api.themoviedb.org/3}")
     private String baseUrl;
     
     private final WebClient webClient = WebClient.builder().build();
@@ -26,6 +26,10 @@ public class TMDBService {
     @Cacheable(value = "nowPlayingMovies", unless = "#result == null")
     public List<TMDBMovieResponse> getNowPlayingMovies() {
         try {
+            log.info("Fetching now playing movies from TMDB...");
+            log.info("Base URL: {}", baseUrl);
+            log.info("API Key length: {}", apiKey != null ? apiKey.length() : 0);
+            
             var response = webClient.get()
                 .uri(baseUrl + "/movie/now_playing?language=vi-VN")
                 .header("Authorization", "Bearer " + apiKey)
@@ -33,6 +37,7 @@ public class TMDBService {
                 .bodyToMono(TMDBApiResponse.class)
                 .block();
             
+            log.info("Fetched {} now playing movies", response != null ? response.getResults().size() : 0);
             return response != null ? response.getResults() : List.of();
         } catch (Exception e) {
             log.error("Error fetching now playing movies", e);
