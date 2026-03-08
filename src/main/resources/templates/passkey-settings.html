@@ -87,6 +87,13 @@
                     
                     const options = await startResponse.json();
                     
+                    // Validate response
+                    if (!options || !options.challenge || !options.user || !options.user.id) {
+                        alert('Lỗi: Server trả về dữ liệu không hợp lệ');
+                        console.error('Invalid options:', options);
+                        return;
+                    }
+                    
                     // Convert challenge and user.id to Uint8Array
                     options.challenge = base64ToArrayBuffer(options.challenge);
                     options.user.id = base64ToArrayBuffer(options.user.id);
