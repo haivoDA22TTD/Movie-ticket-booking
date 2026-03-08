@@ -1,1 +1,1 @@
-# Movie-ticket-booking
+# Movie-ticket-bookings
