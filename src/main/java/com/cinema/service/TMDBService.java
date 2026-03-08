@@ -18,7 +18,7 @@ public class TMDBService {
     @Value("${tmdb.api.key}")
     private String apiKey;
     
-    @Value("${tmdb.api.base-url}")
+    @Value("${tmdb.api.base-url:https://api.themoviedb.org/3}")
     private String baseUrl;
     
     private final WebClient webClient = WebClient.builder().build();
