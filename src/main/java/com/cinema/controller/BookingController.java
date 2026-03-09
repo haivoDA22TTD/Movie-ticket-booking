@@ -26,7 +26,16 @@ public class BookingController {
     private final BookingRepository bookingRepository;
     
     @GetMapping("/showtime/{showtimeId}")
-    public String selectSeats(@PathVariable Long showtimeId, Model model) {
+    public String selectSeats(
+        @PathVariable Long showtimeId, 
+        @AuthenticationPrincipal User user,
+        Model model
+    ) {
+        // Nếu chưa đăng nhập, redirect về login
+        if (user == null) {
+            return "redirect:/login?redirect=/booking/showtime/" + showtimeId;
+        }
+        
         Showtime showtime = showtimeRepository.findById(showtimeId)
             .orElseThrow(() -> new RuntimeException("Showtime not found"));
         

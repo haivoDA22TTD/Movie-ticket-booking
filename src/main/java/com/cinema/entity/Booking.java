@@ -44,12 +44,19 @@ public class Booking {
     private BookingStatus status = BookingStatus.PENDING;
     
     @Column(updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime createdAt;
     
     private LocalDateTime paidAt;
     
     @Column(length = 1000)
     private String qrCode;
+    
+    @PrePersist
+    protected void onCreate() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
+    }
     
     public enum BookingStatus {
         PENDING, CONFIRMED, CANCELLED

@@ -36,9 +36,16 @@ public class PasskeyCredential {
     private String deviceName;
     
     @Column(nullable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime createdAt;
     
     private LocalDateTime lastUsedAt;
     
     private boolean enabled = true;
+    
+    @PrePersist
+    protected void onCreate() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
+    }
 }
