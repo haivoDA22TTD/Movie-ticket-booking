@@ -261,8 +261,8 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 **haivoDev**
 
-- GitHub: [@haivoDev](https://github.com/haivoDA22TTD)
-- Email: haivo.dev@gmail.com
+- GitHub: [haivoDA22TTD](https://github.com/haivoDA22TTD)
+- Email: 110122068@st.tvu.edu.vn
 
 ---
 
