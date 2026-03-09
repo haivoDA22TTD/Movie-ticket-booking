@@ -23,6 +23,7 @@ public class SecurityConfig {
                 .requestMatchers("/", "/movies/**", "/css/**", "/js/**", "/images/**", 
                     "/register", "/login", "/api/movies/**", 
                     "/passkey/authenticate/**", "/actuator/health", "/admin/sync-movies").permitAll()
+                .requestMatchers("/passkey/register/**", "/passkey/settings", "/passkey/**").authenticated()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
@@ -35,7 +36,7 @@ public class SecurityConfig {
                 .logoutSuccessUrl("/")
                 .permitAll()
             )
-            .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"));
+            .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**", "/passkey/**"));
         
         return http.build();
     }

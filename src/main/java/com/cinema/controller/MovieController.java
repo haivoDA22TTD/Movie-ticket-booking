@@ -1,8 +1,8 @@
 package com.cinema.controller;
 
-import com.cinema.entity.Movie;
+import com.cinema.dto.TMDBMovieResponse;
 import com.cinema.repository.ShowtimeRepository;
-import com.cinema.service.MovieService;
+import com.cinema.service.TMDBService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,12 +17,15 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class MovieController {
     
-    private final MovieService movieService;
+    private final TMDBService tmdbService;
     private final ShowtimeRepository showtimeRepository;
     
     @GetMapping("/{id}")
     public String movieDetail(@PathVariable Long id, Model model) {
-        Movie movie = movieService.getMovieById(id);
+        // Get movie from TMDB API
+        TMDBMovieResponse movie = tmdbService.getMovieDetails(id);
+        
+        // Get showtimes from database
         var showtimes = showtimeRepository.findUpcomingShowtimesByMovie(id, LocalDateTime.now());
         
         model.addAttribute("movie", movie);
