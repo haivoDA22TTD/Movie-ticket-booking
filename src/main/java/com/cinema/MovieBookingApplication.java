@@ -60,11 +60,13 @@ public class MovieBookingApplication {
             
             // Sync movies from TMDB to database
             if (movieRepository.count() == 0) {
-                log.info("Syncing movies from TMDB to database...");
+                log.info("Syncing 5 movies from TMDB to database...");
                 try {
                     List<TMDBMovieResponse> nowPlaying = tmdbService.getNowPlayingMovies();
                     
-                    for (TMDBMovieResponse tmdbMovie : nowPlaying) {
+                    // Chỉ lấy 5 phim đầu để tránh timeout
+                    for (int i = 0; i < Math.min(5, nowPlaying.size()); i++) {
+                        TMDBMovieResponse tmdbMovie = nowPlaying.get(i);
                         Movie movie = Movie.builder()
                             .tmdbId(tmdbMovie.getId())
                             .title(tmdbMovie.getTitle())
@@ -85,7 +87,7 @@ public class MovieBookingApplication {
                         
                         movieRepository.save(movie);
                     }
-                    log.info("✅ Synced {} movies from TMDB", nowPlaying.size());
+                    log.info("✅ Synced 5 movies from TMDB");
                 } catch (Exception e) {
                     log.error("Failed to sync movies: {}", e.getMessage());
                 }
