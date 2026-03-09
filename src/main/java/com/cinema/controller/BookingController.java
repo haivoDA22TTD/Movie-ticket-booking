@@ -8,6 +8,7 @@ import com.cinema.repository.SeatRepository;
 import com.cinema.repository.ShowtimeRepository;
 import com.cinema.service.BookingService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,6 +19,7 @@ import java.util.List;
 @Controller
 @RequestMapping("/booking")
 @RequiredArgsConstructor
+@Slf4j
 public class BookingController {
     
     private final BookingService bookingService;
@@ -31,27 +33,41 @@ public class BookingController {
         @AuthenticationPrincipal User user,
         Model model
     ) {
-        // Nếu chưa đăng nhập, redirect về login
-        if (user == null) {
-            return "redirect:/login?redirect=/booking/showtime/" + showtimeId;
+        try {
+            log.info("Loading seat selection for showtime: {}, user: {}", showtimeId, user != null ? user.getEmail() : "null");
+            
+            // Nếu chưa đăng nhập, redirect về login
+            if (user == null) {
+                log.warn("User not authenticated, redirecting to login");
+                return "redirect:/login?redirect=/booking/showtime/" + showtimeId;
+            }
+            
+            Showtime showtime = showtimeRepository.findById(showtimeId)
+                .orElseThrow(() -> new RuntimeException("Showtime not found"));
+            
+            log.info("Found showtime: {}, screen: {}", showtime.getId(), showtime.getScreen().getId());
+            
+            var seats = seatRepository.findByScreenIdOrderBySeatRowAscSeatNumberAsc(
+                showtime.getScreen().getId());
+            
+            log.info("Found {} seats for screen {}", seats.size(), showtime.getScreen().getId());
+            
+            var bookedSeats = bookingRepository.findByShowtimeId(showtimeId).stream()
+                .filter(b -> b.getStatus() != Booking.BookingStatus.CANCELLED)
+                .flatMap(b -> b.getSeats().stream())
+                .map(s -> s.getId())
+                .toList();
+            
+            log.info("Found {} booked seats", bookedSeats.size());
+            
+            model.addAttribute("showtime", showtime);
+            model.addAttribute("seats", seats);
+            model.addAttribute("bookedSeats", bookedSeats);
+            return "seat-selection";
+        } catch (Exception e) {
+            log.error("Error loading seat selection: ", e);
+            throw e;
         }
-        
-        Showtime showtime = showtimeRepository.findById(showtimeId)
-            .orElseThrow(() -> new RuntimeException("Showtime not found"));
-        
-        var seats = seatRepository.findByScreenIdOrderBySeatRowAscSeatNumberAsc(
-            showtime.getScreen().getId());
-        
-        var bookedSeats = bookingRepository.findByShowtimeId(showtimeId).stream()
-            .filter(b -> b.getStatus() != Booking.BookingStatus.CANCELLED)
-            .flatMap(b -> b.getSeats().stream())
-            .map(s -> s.getId())
-            .toList();
-        
-        model.addAttribute("showtime", showtime);
-        model.addAttribute("seats", seats);
-        model.addAttribute("bookedSeats", bookedSeats);
-        return "seat-selection";
     }
     
     @PostMapping("/create")
@@ -61,8 +77,19 @@ public class BookingController {
         @RequestParam List<Long> seatIds,
         Model model
     ) {
-        Booking booking = bookingService.createBooking(user, showtimeId, seatIds);
-        return "redirect:/booking/payment/" + booking.getId();
+        try {
+            log.info("Creating booking for user: {}, showtime: {}, seats: {}", 
+                user.getEmail(), showtimeId, seatIds);
+            
+            Booking booking = bookingService.createBooking(user, showtimeId, seatIds);
+            
+            log.info("Booking created successfully: {}", booking.getId());
+            return "redirect:/booking/payment/" + booking.getId();
+        } catch (Exception e) {
+            log.error("Error creating booking: ", e);
+            model.addAttribute("error", e.getMessage());
+            return "redirect:/booking/showtime/" + showtimeId + "?error=" + e.getMessage();
+        }
     }
     
     @GetMapping("/payment/{bookingId}")

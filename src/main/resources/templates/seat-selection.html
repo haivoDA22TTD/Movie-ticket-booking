@@ -43,13 +43,16 @@
                          class="flex items-center space-x-2">
                         <span class="w-8 text-center font-bold" th:text="${row}">A</span>
                         <div class="flex space-x-2">
-                            <button th:each="num : ${#numbers.sequence(1, 12)}"
-                                    th:data-seat-id="${row + num}"
-                                    th:classappend="${#lists.contains(bookedSeats, seat.id)} ? 'seat-booked' : 'seat-available'"
-                                    class="seat w-10 h-10 rounded border-2 transition hover:scale-110"
-                                    onclick="toggleSeat(this)">
-                                <span th:text="${num}">1</span>
-                            </button>
+                            <div th:each="num : ${#numbers.sequence(1, 12)}">
+                                <button th:each="seat : ${seats}"
+                                        th:if="${seat.seatRow == row && seat.seatNumber == num}"
+                                        th:data-seat-id="${seat.id}"
+                                        th:classappend="${#lists.contains(bookedSeats, seat.id)} ? 'seat-booked' : 'seat-available'"
+                                        class="seat w-10 h-10 rounded border-2 transition hover:scale-110"
+                                        th:onclick="'toggleSeat(this, ' + ${seat.id} + ')'">
+                                    <span th:text="${num}">1</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -97,44 +100,53 @@
         
         <script th:inline="javascript">
             const seatPrice = /*[[${showtime.price}]]*/ 100000;
-            const bookedSeats = /*[[${bookedSeats}]]*/ [];
-            let selectedSeats = [];
+            const bookedSeatIds = /*[[${bookedSeats}]]*/ [];
+            let selectedSeatIds = [];
             
-            function toggleSeat(button) {
+            function toggleSeat(button, seatId) {
                 if (button.classList.contains('seat-booked')) return;
-                
-                const seatId = button.dataset.seatId;
                 
                 if (button.classList.contains('seat-selected')) {
                     button.classList.remove('seat-selected', 'bg-red-500', 'border-red-600', 'text-white');
                     button.classList.add('seat-available', 'bg-gray-300', 'border-gray-400');
-                    selectedSeats = selectedSeats.filter(s => s !== seatId);
+                    selectedSeatIds = selectedSeatIds.filter(s => s !== seatId);
                 } else {
                     button.classList.remove('seat-available', 'bg-gray-300', 'border-gray-400');
                     button.classList.add('seat-selected', 'bg-red-500', 'border-red-600', 'text-white');
-                    selectedSeats.push(seatId);
+                    selectedSeatIds.push(seatId);
                 }
                 
                 updateSummary();
             }
             
             function updateSummary() {
-                const selectedSeatsText = selectedSeats.length > 0 
-                    ? selectedSeats.join(', ') 
+                const selectedSeatsText = selectedSeatIds.length > 0 
+                    ? selectedSeatIds.map(id => {
+                        const btn = document.querySelector(`[data-seat-id="${id}"]`);
+                        return btn ? btn.textContent.trim() : id;
+                    }).join(', ')
                     : 'Chưa chọn ghế';
                 document.getElementById('selected-seats').textContent = selectedSeatsText;
                 
-                const total = selectedSeats.length * seatPrice;
+                const total = selectedSeatIds.length * seatPrice;
                 document.getElementById('total-price').textContent = 
                     total.toLocaleString('vi-VN') + 'đ';
                 
-                document.getElementById('seat-ids').value = selectedSeats.join(',');
-                document.getElementById('submit-btn').disabled = selectedSeats.length === 0;
+                document.getElementById('seat-ids').value = selectedSeatIds.join(',');
+                document.getElementById('submit-btn').disabled = selectedSeatIds.length === 0;
             }
             
-            // Initialize booked seats
-            document.querySelectorAll('.seat').forEach(seat => {
-                seat.classList.add('seat-available', 'bg-gray-300', 'border-gray-400');
+            // Initialize seats
+            document.addEventListener('DOMContentLoaded', function() {
+                document.querySelectorAll('.seat').forEach(seat => {
+                    const seatId = parseInt(seat.dataset.seatId);
+                    if (bookedSeatIds.includes(seatId)) {
+                        seat.classList.add('seat-booked', 'bg-gray-500', 'border-gray-600', 'cursor-not-allowed');
+                        seat.disabled = true;
+                    } else {
+                        seat.classList.add('seat-available', 'bg-gray-300', 'border-gray-400');
+                    }
+                });
             });
         </script>
     </section>
