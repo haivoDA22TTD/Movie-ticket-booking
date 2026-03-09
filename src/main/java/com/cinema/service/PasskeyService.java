@@ -21,7 +21,7 @@ public class PasskeyService {
     private final PasskeyCredentialRepository passkeyCredentialRepository;
     private final UserRepository userRepository;
     
-    @Value("${APP_DOMAIN:localhost}")
+    @Value("${APP_DOMAIN}")
     private String appDomain;
     
     // Store challenges temporarily (in production, use Redis)

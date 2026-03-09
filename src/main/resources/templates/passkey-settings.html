@@ -94,6 +94,9 @@
                         return;
                     }
                     
+                    // Store original challenge before conversion
+                    const originalChallenge = options.challenge;
+                    
                     // Convert challenge and user.id to Uint8Array
                     options.challenge = base64ToArrayBuffer(options.challenge);
                     options.user.id = base64ToArrayBuffer(options.user.id);
@@ -111,7 +114,7 @@
                             credentialId: arrayBufferToBase64(credential.rawId),
                             publicKey: arrayBufferToBase64(credential.response.getPublicKey()),
                             deviceName: deviceName,
-                            challenge: options.challenge
+                            challenge: originalChallenge
                         })
                     });
                     

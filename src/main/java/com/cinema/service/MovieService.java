@@ -3,12 +3,14 @@ package com.cinema.service;
 import com.cinema.dto.TMDBMovieResponse;
 import com.cinema.entity.Movie;
 import com.cinema.repository.MovieRepository;
+import com.cinema.repository.ShowtimeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,10 +21,23 @@ public class MovieService {
     
     private final MovieRepository movieRepository;
     private final TMDBService tmdbService;
+    private final ShowtimeRepository showtimeRepository;
     
-    // Lấy phim trực tiếp từ TMDB, không cache
-    public List<TMDBMovieResponse> getNowShowingMovies() {
-        return tmdbService.getNowPlayingMovies();
+    // Lấy phim CÓ LỊCH CHIẾU từ database
+    public List<TMDBMovieResponse> getMoviesWithShowtimes() {
+        // Lấy danh sách movie IDs có lịch chiếu
+        List<Long> movieIdsWithShowtimes = showtimeRepository
+            .findUpcomingShowtimes(LocalDateTime.now())
+            .stream()
+            .map(showtime -> showtime.getMovie().getId())
+            .distinct()
+            .toList();
+        
+        // Lấy thông tin chi tiết từ TMDB cho các phim có lịch chiếu
+        return movieIdsWithShowtimes.stream()
+            .map(tmdbService::getMovieDetails)
+            .filter(movie -> movie != null)
+            .toList();
     }
     
     public List<TMDBMovieResponse> getComingSoonMovies() {
