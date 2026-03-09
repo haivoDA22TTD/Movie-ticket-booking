@@ -123,8 +123,7 @@ public class MovieBookingApplication {
                                 .screen(screen)
                                 .seatRow(row)
                                 .seatNumber(num)
-                                .seatType(Seat.SeatType.NORMAL)
-                                .available(true)
+                                .type(Seat.SeatType.STANDARD)
                                 .build();
                             seats.add(seat);
                         }
