@@ -34,7 +34,7 @@
                             <div class="mt-3">
                                 <span th:each="genre : ${movie.genres}" 
                                       class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm text-gray-700 mr-2 mb-2"
-                                      th:text="${genre}">Action</span>
+                                      th:text="${genre.name}">Action</span>
                             </div>
                             <button class="w-full mt-4 bg-red-600 text-white py-2 rounded hover:bg-red-700 transition">
                                 <i class="fas fa-ticket-alt mr-2"></i>Đặt vé ngay

@@ -2,55 +2,167 @@
 <html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::section})}">
 <body>
     <section>
-        <div class="container mx-auto px-4 py-12">
-            <h1 class="text-3xl font-bold mb-8">
-                <i class="fas fa-tachometer-alt text-red-500 mr-3"></i>Admin Dashboard
-            </h1>
+        <div class="container mx-auto px-4 py-8">
+            <!-- Header -->
+            <div class="mb-8">
+                <h1 class="text-4xl font-bold text-gray-800 mb-2">
+                    <i class="fas fa-tachometer-alt text-red-500 mr-3"></i>Admin Dashboard
+                </h1>
+                <p class="text-gray-600">Tổng quan hệ thống quản lý rạp chiếu phim</p>
+            </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div class="bg-white rounded-lg shadow-lg p-6">
+            <!-- Revenue & Customer Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <!-- Total Revenue -->
+                <div class="bg-gradient-to-r from-green-400 to-green-600 rounded-xl shadow-lg p-6 text-white">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-gray-600">Rạp chiếu</p>
-                            <p class="text-3xl font-bold" th:text="${cinemaCount}">0</p>
+                            <p class="text-green-100 text-sm font-medium">Tổng doanh thu</p>
+                            <p class="text-2xl font-bold" th:text="${totalRevenue}">0 ₫</p>
                         </div>
-                        <i class="fas fa-building text-4xl text-blue-500"></i>
+                        <div class="bg-white bg-opacity-20 rounded-full p-3">
+                            <i class="fas fa-money-bill-wave text-2xl"></i>
+                        </div>
                     </div>
-                    <a href="/admin/cinemas" class="text-blue-600 hover:underline mt-4 block">Quản lý →</a>
                 </div>
                 
-                <div class="bg-white rounded-lg shadow-lg p-6">
+                <!-- Total Customers -->
+                <div class="bg-gradient-to-r from-blue-400 to-blue-600 rounded-xl shadow-lg p-6 text-white">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-gray-600">Phòng chiếu</p>
-                            <p class="text-3xl font-bold" th:text="${screenCount}">0</p>
+                            <p class="text-blue-100 text-sm font-medium">Tổng khách hàng</p>
+                            <p class="text-2xl font-bold" th:text="${totalCustomers}">0</p>
                         </div>
-                        <i class="fas fa-door-open text-4xl text-green-500"></i>
+                        <div class="bg-white bg-opacity-20 rounded-full p-3">
+                            <i class="fas fa-users text-2xl"></i>
+                        </div>
                     </div>
-                    <a href="/admin/screens" class="text-green-600 hover:underline mt-4 block">Quản lý →</a>
                 </div>
                 
-                <div class="bg-white rounded-lg shadow-lg p-6">
+                <!-- Monthly Revenue -->
+                <div class="bg-gradient-to-r from-purple-400 to-purple-600 rounded-xl shadow-lg p-6 text-white">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-gray-600">Lịch chiếu</p>
-                            <p class="text-3xl font-bold" th:text="${showtimeCount}">0</p>
+                            <p class="text-purple-100 text-sm font-medium">Doanh thu tháng</p>
+                            <p class="text-2xl font-bold" th:text="${monthlyRevenue}">0 ₫</p>
                         </div>
-                        <i class="fas fa-calendar text-4xl text-red-500"></i>
+                        <div class="bg-white bg-opacity-20 rounded-full p-3">
+                            <i class="fas fa-chart-line text-2xl"></i>
+                        </div>
                     </div>
-                    <a href="/admin/showtimes" class="text-red-600 hover:underline mt-4 block">Quản lý →</a>
+                </div>
+                
+                <!-- Monthly Bookings -->
+                <div class="bg-gradient-to-r from-orange-400 to-orange-600 rounded-xl shadow-lg p-6 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-orange-100 text-sm font-medium">Đặt vé tháng</p>
+                            <p class="text-2xl font-bold" th:text="${monthlyBookings}">0</p>
+                        </div>
+                        <div class="bg-white bg-opacity-20 rounded-full p-3">
+                            <i class="fas fa-ticket-alt text-2xl"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
             
-            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
-                <h3 class="font-bold text-lg mb-2">
-                    <i class="fas fa-info-circle text-yellow-600 mr-2"></i>Hướng dẫn
-                </h3>
-                <ol class="list-decimal list-inside space-y-2 text-gray-700">
-                    <li>Tạo rạp chiếu (Cinemas)</li>
-                    <li>Tạo phòng chiếu cho từng rạp (Screens)</li>
-                    <li>Tạo lịch chiếu cho phim (Showtimes)</li>
-                </ol>
+            <!-- System Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <p class="text-gray-600 text-sm font-medium">Rạp chiếu</p>
+                            <p class="text-3xl font-bold text-gray-800" th:text="${cinemaCount}">0</p>
+                        </div>
+                        <div class="bg-blue-100 rounded-full p-3">
+                            <i class="fas fa-building text-2xl text-blue-600"></i>
+                        </div>
+                    </div>
+                    <a href="/admin/cinemas" class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium">
+                        Quản lý <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <p class="text-gray-600 text-sm font-medium">Phòng chiếu</p>
+                            <p class="text-3xl font-bold text-gray-800" th:text="${screenCount}">0</p>
+                        </div>
+                        <div class="bg-green-100 rounded-full p-3">
+                            <i class="fas fa-door-open text-2xl text-green-600"></i>
+                        </div>
+                    </div>
+                    <a href="/admin/screens" class="inline-flex items-center text-green-600 hover:text-green-800 font-medium">
+                        Quản lý <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <p class="text-gray-600 text-sm font-medium">Lịch chiếu</p>
+                            <p class="text-3xl font-bold text-gray-800" th:text="${showtimeCount}">0</p>
+                        </div>
+                        <div class="bg-red-100 rounded-full p-3">
+                            <i class="fas fa-calendar text-2xl text-red-600"></i>
+                        </div>
+                    </div>
+                    <a href="/admin/showtimes" class="inline-flex items-center text-red-600 hover:text-red-800 font-medium">
+                        Quản lý <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Recent Activity & Quick Guide -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Recent Bookings -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">
+                        <i class="fas fa-clock text-blue-500 mr-2"></i>Đặt vé gần đây
+                    </h3>
+                    <div class="space-y-3" th:if="${recentBookings != null and !recentBookings.empty}">
+                        <div th:each="booking : ${recentBookings}" class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div>
+                                <p class="font-medium text-gray-800" th:text="${booking.bookingCode}">Mã đặt vé</p>
+                                <p class="text-sm text-gray-600" th:text="${booking.user.fullName}">Khách hàng</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-bold text-green-600" th:text="${#numbers.formatCurrency(booking.totalPrice)}">Giá</p>
+                                <p class="text-xs text-gray-500" th:text="${#temporals.format(booking.createdAt, 'dd/MM HH:mm')}">Thời gian</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div th:if="${recentBookings == null or recentBookings.empty}" class="text-center py-8 text-gray-500">
+                        <i class="fas fa-inbox text-4xl mb-2"></i>
+                        <p>Chưa có đặt vé nào</p>
+                    </div>
+                </div>
+                
+                <!-- Quick Guide -->
+                <div class="bg-gradient-to-br from-yellow-50 to-orange-50 border border-yellow-200 rounded-xl p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">
+                        <i class="fas fa-lightbulb text-yellow-500 mr-2"></i>Hướng dẫn nhanh
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="flex items-start">
+                            <div class="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold mr-3 mt-0.5">1</div>
+                            <p class="text-gray-700">Tạo rạp chiếu và cấu hình thông tin cơ bản</p>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="bg-green-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold mr-3 mt-0.5">2</div>
+                            <p class="text-gray-700">Thêm phòng chiếu cho từng rạp với số ghế phù hợp</p>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold mr-3 mt-0.5">3</div>
+                            <p class="text-gray-700">Tạo lịch chiếu cho các bộ phim</p>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="bg-purple-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold mr-3 mt-0.5">4</div>
+                            <p class="text-gray-700">Theo dõi doanh thu và quản lý đặt vé</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>

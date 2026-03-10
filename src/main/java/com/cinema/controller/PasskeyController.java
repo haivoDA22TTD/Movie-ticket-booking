@@ -3,9 +3,13 @@ package com.cinema.controller;
 import com.cinema.entity.PasskeyCredential;
 import com.cinema.entity.User;
 import com.cinema.service.PasskeyService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -73,7 +77,8 @@ public class PasskeyController {
     @PostMapping("/authenticate/finish")
     @ResponseBody
     public ResponseEntity<Map<String, String>> finishAuthentication(
-        @RequestBody Map<String, String> request
+        @RequestBody Map<String, String> request,
+        HttpServletRequest httpRequest
     ) {
         try {
             User user = passkeyService.finishAuthentication(
@@ -82,6 +87,16 @@ public class PasskeyController {
                 request.get("signature"),
                 request.get("authenticatorData")
             );
+            
+            // Create authentication token and set in security context
+            UsernamePasswordAuthenticationToken authToken = 
+                new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authToken);
+            
+            // Save to session
+            HttpSession session = httpRequest.getSession(true);
+            session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
+            
             return ResponseEntity.ok(Map.of(
                 "status", "success",
                 "message", "Đăng nhập thành công",
