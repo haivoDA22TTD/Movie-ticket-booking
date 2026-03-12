@@ -268,7 +268,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## 🙏 Acknowledgments
 
-- [TMDB](https://www.themoviedb.org/) - Movie database API
+- [TMDB](https://www.themoviedb.org/) - Movie API
 - [Spring Boot](https://spring.io/projects/spring-boot) - Framework
 - [Tailwind CSS](https://tailwindcss.com/) - CSS framework
 - [Font Awesome](https://fontawesome.com/) - Icons
